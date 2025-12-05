@@ -1,0 +1,7 @@
+.env
+__pycache__/
+*.pyc
+test_resource.py
+ThinkingCities*.json
+sdmenvironment.postman_environment.json
+*environment.postman_environment.json
