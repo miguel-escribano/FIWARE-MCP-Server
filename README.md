@@ -199,121 +199,51 @@ Add to your configuration file:
 - **macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`
 - **Windows**: `%APPDATA%\Claude\claude_desktop_config.json`
 
-**Option A: Using `.env` file (Recommended)**
+1. **Install dependencies**:
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-1. Install dependencies:
-```bash
-pip install -r requirements.txt
-```
+2. **Create `.env` file** with your credentials (see `.env.example`)
 
-2. Create `.env` file with your credentials (see `.env.example`)
+3. **Add to config**:
+   ```json
+   {
+     "mcpServers": {
+       "fiware": {
+         "command": "python",
+         "args": ["/path/to/server.py"]
+       }
+     }
+   }
+   ```
 
-3. Add to config:
-```json
-{
-  "mcpServers": {
-    "fiware": {
-      "command": "python",
-      "args": ["/path/to/server.py"]
-    }
-  }
-}
-```
-
-**Option B: Using `uv` (no pre-install, credentials in config)**
-```json
-{
-  "mcpServers": {
-    "fiware": {
-      "command": "uv",
-      "args": [
-        "run", "--with", "fastmcp>=2.0.0", "--with", "requests", "--with", "python-dotenv",
-        "python", "/path/to/server.py"
-      ],
-      "env": {
-        "AUTH_HOST": "your-keystone-host",
-        "CB_HOST": "your-context-broker-host",
-        "USERNAME": "your_username",
-        "PASSWORD": "your_password",
-        "SERVICE": "your_service",
-        "SUBSERVICE": "/your_subservice"
-      }
-    }
-  }
-}
-```
-
-> **Note:** Option A is recommended as it keeps credentials separate from configuration.
+> **Note:** Credentials are read from `.env` file automatically. Do not put credentials in the config file.
 
 ### Cursor
 
 Add to your Cursor MCP configuration (`~/.cursor/mcp.json`):
 
-**Option A: Using `.env` file (Recommended)**
+1. **Install dependencies**:
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-1. Install dependencies:
-```bash
-pip install -r requirements.txt
-```
+2. **Create `.env` file** with your credentials (see `.env.example`)
 
-2. Create `.env` file with your credentials (see `.env.example`)
+3. **Add to `mcp.json`**:
+   ```json
+   {
+     "mcpServers": {
+       "fiware": {
+         "command": "python",
+         "args": ["/path/to/server.py"]
+       }
+     }
+   }
+   ```
 
-3. Add to `mcp.json`:
-```json
-{
-  "mcpServers": {
-    "fiware": {
-      "command": "python",
-      "args": ["/path/to/server.py"]
-    }
-  }
-}
-```
-
-**Option B: Using `uv` (no pre-install, credentials in mcp.json)**
-```json
-{
-  "mcpServers": {
-    "fiware": {
-      "command": "uv",
-      "args": [
-        "run", "--with", "fastmcp>=2.0.0", "--with", "requests", "--with", "python-dotenv",
-        "python", "/path/to/server.py"
-      ],
-      "env": {
-        "AUTH_HOST": "your-keystone-host",
-        "CB_HOST": "your-context-broker-host",
-        "USERNAME": "your_username",
-        "PASSWORD": "your_password",
-        "SERVICE": "your_service",
-        "SUBSERVICE": "/your_subservice"
-      }
-    }
-  }
-}
-```
-
-**Option C: Credentials in `mcp.json` (without `.env` file)**
-```json
-{
-  "mcpServers": {
-    "fiware": {
-      "command": "python",
-      "args": ["/path/to/server.py"],
-      "env": {
-        "AUTH_HOST": "your-keystone-host",
-        "CB_HOST": "your-context-broker-host",
-        "USERNAME": "your_username",
-        "PASSWORD": "your_password",
-        "SERVICE": "your_service",
-        "SUBSERVICE": "/your_subservice"
-      }
-    }
-  }
-}
-```
-
-> **Note:** Option A is recommended as it keeps credentials separate from configuration.
+> **Note:** Credentials are read from `.env` file automatically. Do not put credentials in `mcp.json`.
 
 ### Visual Studio Code
 
