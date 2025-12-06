@@ -26,9 +26,9 @@ An MCP (Model Context Protocol) server for FIWARE NGSI-v2 Context Broker with Sm
 
 ## 📦 Installation
 
-This MCP server is designed for **local deployment** with your own FIWARE infrastructure and credentials. It connects to your specific Context Broker instance using your authentication details.
+This MCP server runs **locally on your machine** and connects to your FIWARE Context Broker (which can be local, remote, or cloud-hosted). It is not a hosted service—you install and run it yourself.
 
-**Available on Smithery**: You can find this server in the [Smithery MCP Registry](https://smithery.ai), but it requires local installation and configuration with your FIWARE credentials.
+**Available on Smithery**: You can find this server in the [Smithery MCP Registry](https://smithery.ai) for easy discovery, but installation and configuration are done locally with your FIWARE credentials.
 
 See the [Integration](#integration) section below for step-by-step instructions.
 
@@ -48,7 +48,7 @@ This fork adapts the original NGSI-LD implementation to work with NGSI-v2 APIs a
 
 ## 🚀 Quick Start
 
-> **Note:** This server requires local installation with your own FIWARE infrastructure. It is not a hosted service.
+> **Note:** The MCP server runs locally on your machine. Your FIWARE Context Broker can be anywhere (localhost, remote server, or cloud).
 
 ```bash
 # Clone the repository
@@ -62,7 +62,7 @@ pip install -r requirements.txt
 cp .env.example .env
 ```
 
-Edit `.env` with your FIWARE platform credentials:
+Edit `.env` with your FIWARE Context Broker connection details:
 
 ```env
 AUTH_HOST=your-keystone-host
