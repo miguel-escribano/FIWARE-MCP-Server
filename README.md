@@ -4,6 +4,7 @@ An MCP (Model Context Protocol) server for FIWARE NGSI-v2 Context Broker with Sm
 
 Forked from [dncampo/FIWARE-MCP-Server](https://github.com/dncampo/FIWARE-MCP-Server) (NGSI-LD, no auth).
 
+
 ## Features
 
 - **Smart Data Models Integration**: Direct access to official FIWARE data model schemas for standardized entity creation
@@ -13,12 +14,14 @@ Forked from [dncampo/FIWARE-MCP-Server](https://github.com/dncampo/FIWARE-MCP-Se
 - **OAuth Authentication**: OpenStack Keystone integration for enterprise FIWARE platforms
 - **NGSI-v2 API**: Full support for FIWARE NGSI-v2 specification
 
+
 ## One-Click Install
 
 [![Install in Cursor](https://cursor.com/deeplink/mcp-install-dark.svg)](cursor://anysphere.cursor-deeplink/mcp/install?name=fiware-ngsi-v2&config=eyJjb21tYW5kIjoicHl0aG9uIiwiYXJncyI6WyJzZXJ2ZXIucHkiXSwiZW52Ijp7IkFVVEhfSE9TVCI6IllPVVJfS0VZU1RPTkVfSE9TVCIsIkFVVEhfUE9SVCI6IjE1MDAxIiwiQ0JfSE9TVCI6IllPVVJfQ09OVEVYVF9CUk9LRVJfSE9TVCIsIkNCX1BPUlQiOiIxMDI2IiwiVVNFUk5BTUUiOiJZT1VSX1VTRVJOQU1FIiwiUEFTU1dPUkQiOiJZT1VSX1BBU1NXT1JEIiwiU0VSVklDRSI6IllPVVJfU0VSVklDRSIsIlNVQlNFUlZJQ0UiOiIvWU9VUl9TVUJTRVJWSUNFIn19)
 [![Install in VS Code](https://img.shields.io/badge/VS_Code-Install_FIWARE_MCP-0098FF?style=flat-square&logo=visualstudiocode&logoColor=white)](vscode:mcp/install?name=fiware-ngsi-v2&config=%7B%22command%22%3A%22python%22%2C%22args%22%3A%5B%22server.py%22%5D%2C%22env%22%3A%7B%22AUTH_HOST%22%3A%22YOUR_KEYSTONE_HOST%22%2C%22CB_HOST%22%3A%22YOUR_CONTEXT_BROKER_HOST%22%2C%22USERNAME%22%3A%22YOUR_USERNAME%22%2C%22PASSWORD%22%3A%22YOUR_PASSWORD%22%2C%22SERVICE%22%3A%22YOUR_SERVICE%22%2C%22SUBSERVICE%22%3A%22%2FYOUR_SUBSERVICE%22%7D%7D)
 
 > **Note:** After clicking, update the placeholder values (`YOUR_*`) with your actual FIWARE credentials in the MCP settings.
+
 
 ## What's Different
 
@@ -30,6 +33,8 @@ This fork adapts the original NGSI-LD implementation to work with NGSI-v2 APIs a
 | No authentication | OpenStack Keystone OAuth |
 | 5 specific tools | 3 tools + 1 resource + 3 prompts |
 | No Smart Data Models | Smart Data Models integration |
+
+---
 
 ## Quick Start
 
@@ -157,7 +162,28 @@ Add to your configuration file:
 - **macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`
 - **Windows**: `%APPDATA%\Claude\claude_desktop_config.json`
 
-**Option A: Using `uv` (no pre-install needed)**
+**Option A: Using `.env` file (Recommended)**
+
+1. Install dependencies:
+```bash
+pip install -r requirements.txt
+```
+
+2. Create `.env` file with your credentials (see `.env.example`)
+
+3. Add to config:
+```json
+{
+  "mcpServers": {
+    "fiware": {
+      "command": "python",
+      "args": ["/path/to/server.py"]
+    }
+  }
+}
+```
+
+**Option B: Using `uv` (no pre-install, credentials in config)**
 ```json
 {
   "mcpServers": {
@@ -180,31 +206,34 @@ Add to your configuration file:
 }
 ```
 
-**Option B: Using `python` (requires `pip install -r requirements.txt` first)**
-```json
-{
-  "mcpServers": {
-    "fiware": {
-      "command": "python",
-      "args": ["/path/to/server.py"],
-      "env": {
-        "AUTH_HOST": "your-keystone-host",
-        "CB_HOST": "your-context-broker-host",
-        "USERNAME": "your_username",
-        "PASSWORD": "your_password",
-        "SERVICE": "your_service",
-        "SUBSERVICE": "/your_subservice"
-      }
-    }
-  }
-}
-```
+> **Note:** Option A is recommended as it keeps credentials separate from configuration.
 
 ### Cursor
 
 Add to your Cursor MCP configuration (`~/.cursor/mcp.json`):
 
-**Option A: Using `uv` (no pre-install needed)**
+**Option A: Using `.env` file (Recommended)**
+
+1. Install dependencies:
+```bash
+pip install -r requirements.txt
+```
+
+2. Create `.env` file with your credentials (see `.env.example`)
+
+3. Add to `mcp.json`:
+```json
+{
+  "mcpServers": {
+    "fiware": {
+      "command": "python",
+      "args": ["/path/to/server.py"]
+    }
+  }
+}
+```
+
+**Option B: Using `uv` (no pre-install, credentials in mcp.json)**
 ```json
 {
   "mcpServers": {
@@ -227,7 +256,7 @@ Add to your Cursor MCP configuration (`~/.cursor/mcp.json`):
 }
 ```
 
-**Option B: Using `python` (requires `pip install -r requirements.txt` first)**
+**Option C: Credentials in `mcp.json` (without `.env` file)**
 ```json
 {
   "mcpServers": {
@@ -247,7 +276,7 @@ Add to your Cursor MCP configuration (`~/.cursor/mcp.json`):
 }
 ```
 
-Alternatively, add to your project's `.cursor/mcp.json` for project-specific configuration.
+> **Note:** Option A is recommended as it keeps credentials separate from configuration.
 
 ### Visual Studio Code
 
