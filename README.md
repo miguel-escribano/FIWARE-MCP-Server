@@ -68,11 +68,13 @@ AUTH_HOST=your-keystone-host
 AUTH_PORT=15001
 CB_HOST=your-context-broker-host
 CB_PORT=1026
-USERNAME=your_username
-PASSWORD=your_password
+FIWARE_USERNAME=your_username
+FIWARE_PASSWORD=your_password
 SERVICE=your_service
 SUBSERVICE=/your_subservice
 ```
+
+> **Note for Windows users:** We use `FIWARE_USERNAME` instead of `USERNAME` because Windows has a system environment variable called `USERNAME` that would override your `.env` file.
 
 ## Running the Server
 
@@ -273,8 +275,8 @@ Install the [MCP extension](https://marketplace.visualstudio.com/items?itemName=
       "env": {
         "AUTH_HOST": "your-keystone-host",
         "CB_HOST": "your-context-broker-host",
-        "USERNAME": "your_username",
-        "PASSWORD": "your_password",
+        "FIWARE_USERNAME": "your_username",
+        "FIWARE_PASSWORD": "your_password",
         "SERVICE": "your_service",
         "SUBSERVICE": "/your_subservice"
       }
