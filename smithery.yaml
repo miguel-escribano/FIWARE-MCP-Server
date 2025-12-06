@@ -1,0 +1,67 @@
+name: fiware-mcp-server
+displayName: FIWARE MCP Server
+description: MCP server for FIWARE NGSI-v2 Context Broker with Smart Data Models integration and OpenStack Keystone OAuth authentication
+version: 1.0.0
+author: Miguel Escribano
+homepage: https://github.com/miguel-escribano/FIWARE-MCP-Server
+repository: https://github.com/miguel-escribano/FIWARE-MCP-Server
+license: Apache-2.0
+
+categories:
+  - data
+  - iot
+  - api
+
+tags:
+  - fiware
+  - ngsi-v2
+  - context-broker
+  - smart-data-models
+  - iot
+  - openstack
+  - keystone
+
+runtime:
+  language: python
+  version: ">=3.8"
+
+installation:
+  pip:
+    - fastmcp>=2.0.0
+    - requests>=2.31.0
+    - python-dotenv>=1.0.0
+
+configuration:
+  required:
+    - AUTH_HOST
+    - CB_HOST
+    - USERNAME
+    - PASSWORD
+    - SERVICE
+    - SUBSERVICE
+  optional:
+    - AUTH_PORT
+    - CB_PORT
+    - AUTH_TOKEN
+
+capabilities:
+  tools:
+    - name: CB_version
+      description: Check Context Broker version
+    - name: fiware_request
+      description: Execute any FIWARE NGSI-v2 API request
+    - name: get_smart_data_model
+      description: Fetch Smart Data Model schemas from official repository
+  
+  resources:
+    - name: fiware://examples
+      description: FIWARE NGSI-v2 API examples collection (Postman format)
+  
+  prompts:
+    - name: create_fiware_entity
+      description: Guide to create FIWARE entities with Smart Data Models
+    - name: query_fiware_entities
+      description: Guide to query FIWARE entities effectively
+    - name: use_smart_data_models
+      description: Guide to using Smart Data Models for standardized entities
+
