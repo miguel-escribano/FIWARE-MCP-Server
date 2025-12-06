@@ -15,22 +15,7 @@ Forked from [dncampo/FIWARE-MCP-Server](https://github.com/dncampo/FIWARE-MCP-Se
 - **NGSI-v2 API**: Full support for FIWARE NGSI-v2 specification
 
 
-## Quick Install
-
-**Option 1: One-Click Install for Cursor**
-
-Click this link to add the server to Cursor:
-```
-cursor://anysphere.cursor-deeplink/mcp/install?name=fiware-ngsi-v2&config=eyJjb21tYW5kIjoicHl0aG9uIiwiYXJncyI6WyIvcGF0aC90by9zZXJ2ZXIucHkiXX0=
-```
-
-After clicking, you'll need to:
-1. Clone this repository
-2. Install dependencies: `pip install -r requirements.txt`
-3. Create `.env` file with your credentials (see `.env.example`)
-4. Update the path to `server.py` in your Cursor MCP configuration
-
-**Option 2: Manual Installation**
+## Installation
 
 See the [Integration](#integration) section below for step-by-step instructions.
 
