@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
-FIWARE MCP Server - NGSI-v2 API with OAuth Authentication
+FIWARE MCP Server - NGSI-v2 API with Multiple Authentication Methods
 
 Original: https://github.com/dncampo/FIWARE-MCP-Server (NGSI-LD, no auth)
-This fork: NGSI-v2 + OpenStack Keystone authentication
+This fork: NGSI-v2 + Multiple authentication methods (OAuth, Basic Auth, None)
 """
 
 import os
@@ -12,25 +12,35 @@ import sys
 import argparse
 from typing import Optional
 import requests
+from requests.auth import HTTPBasicAuth
 from fastmcp import FastMCP
 from dotenv import load_dotenv
+from pathlib import Path
 import urllib3
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-load_dotenv()
+
+# Load .env from the MCP's directory
+env_path = Path(__file__).parent / ".env"
+load_dotenv(dotenv_path=env_path)
 
 mcp = FastMCP("FIWARE Context Broker Assistant")
 
 # Configuration from .env
+AUTH_TYPE = os.getenv("AUTH_TYPE", "oauth").lower()  # oauth, basic, or none
 AUTH_HOST = os.getenv("AUTH_HOST", "localhost")
 AUTH_PORT = os.getenv("AUTH_PORT", "15001")
 CB_HOST = os.getenv("CB_HOST", "localhost")
 CB_PORT = os.getenv("CB_PORT", "1026")
+CB_PROTOCOL = os.getenv("CB_PROTOCOL", "https")  # http or https
 USERNAME = os.getenv("FIWARE_USERNAME", "")
 PASSWORD = os.getenv("FIWARE_PASSWORD", "")
 SERVICE = os.getenv("SERVICE", "")
 SUBSERVICE = os.getenv("SUBSERVICE", "/")
 AUTH_TOKEN = os.getenv("AUTH_TOKEN", "")
+
+# Debug log
+print(f"[FIWARE-MCP] AUTH_TYPE={AUTH_TYPE}, CB_HOST={CB_HOST}:{CB_PORT}, PROTOCOL={CB_PROTOCOL}", file=sys.stderr)
 
 _token_cache = AUTH_TOKEN if AUTH_TOKEN else None
 
@@ -79,29 +89,47 @@ def get_auth_token() -> Optional[str]:
 
 
 def make_request(method: str, url: str, body: dict = None) -> requests.Response:
-    """Make authenticated request with auto token refresh on 401"""
+    """Make authenticated request based on AUTH_TYPE"""
     headers = {
         "Accept": "application/json",
-        "fiware-service": SERVICE,
-        "fiware-servicepath": SUBSERVICE,
+        "Fiware-Service": SERVICE,
+        "Fiware-ServicePath": SUBSERVICE,
     }
-    
-    token = get_auth_token()
-    if token:
-        headers["x-auth-token"] = token
     
     if method.upper() in ["POST", "PUT", "PATCH"]:
         headers["Content-Type"] = "application/json"
     
-    response = requests.request(method, url, headers=headers, json=body, timeout=10, verify=False)
+    # Determine authentication method
+    auth = None
+    verify_ssl = False
     
-    if response.status_code == 401:
-        print("Token expired, refreshing...", file=sys.stderr)
-        refresh_token()
-        headers["x-auth-token"] = get_auth_token()
-        response = requests.request(method, url, headers=headers, json=body, timeout=10, verify=False)
+    if AUTH_TYPE == "oauth":
+        # OAuth with OpenStack Keystone
+        token = get_auth_token()
+        if token:
+            headers["x-auth-token"] = token
+        response = requests.request(method, url, headers=headers, json=body, timeout=10, verify=verify_ssl)
+        
+        # Auto-refresh token on 401
+        if response.status_code == 401:
+            print("Token expired, refreshing...", file=sys.stderr)
+            refresh_token()
+            headers["x-auth-token"] = get_auth_token()
+            response = requests.request(method, url, headers=headers, json=body, timeout=10, verify=verify_ssl)
+        
+        return response
     
-    return response
+    elif AUTH_TYPE == "basic":
+        # HTTP Basic Authentication
+        auth = HTTPBasicAuth(USERNAME, PASSWORD)
+        return requests.request(method, url, headers=headers, json=body, auth=auth, timeout=10, verify=verify_ssl)
+    
+    elif AUTH_TYPE == "none":
+        # No authentication
+        return requests.request(method, url, headers=headers, json=body, timeout=10, verify=verify_ssl)
+    
+    else:
+        raise ValueError(f"Invalid AUTH_TYPE: {AUTH_TYPE}. Must be 'oauth', 'basic', or 'none'.")
 
 
 @mcp.resource("fiware://examples")
@@ -232,8 +260,8 @@ Learn more: https://smartdatamodels.org/
 def CB_version() -> str:
     """Check Context Broker version"""
     try:
-        url = f"https://{CB_HOST}:{CB_PORT}/version"
-        response = requests.get(url, headers={"Accept": "application/json"}, timeout=10, verify=False)
+        url = f"{CB_PROTOCOL}://{CB_HOST}:{CB_PORT}/version"
+        response = make_request("GET", url)
         return json.dumps({"success": True, "version": response.json()}, indent=2)
     except Exception as e:
         return json.dumps({"error": str(e)})
@@ -287,7 +315,7 @@ def fiware_request(method: str, endpoint: str, body: dict = None) -> str:
         POST /v2/op/query                          - Batch query (with body)
     """
     try:
-        url = f"https://{CB_HOST}:{CB_PORT}{endpoint}"
+        url = f"{CB_PROTOCOL}://{CB_HOST}:{CB_PORT}{endpoint}"
         response = make_request(method.upper(), url, body)
         
         try:

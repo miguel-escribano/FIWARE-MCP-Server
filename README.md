@@ -8,18 +8,19 @@
 > **⚠️ Early Version**  
 > This is a first release. While functional, there may be inconsistencies or areas for improvement. Feedback, suggestions, and contributions are welcome—feel free to open issues or reach out.
 
-An MCP (Model Context Protocol) server for FIWARE NGSI-v2 Context Broker with Smart Data Models lookup and OpenStack Keystone OAuth authentication. This server enables AI assistants like Claude Desktop and Cursor to interact with FIWARE platforms while ensuring compliance with standardized, interoperable data models.
+An MCP (Model Context Protocol) server for FIWARE NGSI-v2 Context Broker with Smart Data Models lookup and **multiple authentication methods** (OAuth, Basic Auth, or none). This server enables AI assistants like Claude Desktop and Cursor to interact with FIWARE platforms while ensuring compliance with standardized, interoperable data models.
 
 **Forked from** [dncampo/FIWARE-MCP-Server](https://github.com/dncampo/FIWARE-MCP-Server) (NGSI-LD, no auth) · [See Acknowledgments](#-acknowledgments)
 
 
 ## ✨ Features
 
+- **Multiple Authentication Methods**: OAuth (OpenStack Keystone), HTTP Basic Auth, or no authentication
 - **Smart Data Models Integration**: Discover, fetch, and convert official FIWARE data model schemas with automatic NGSI-v2 type mapping
 - **4 MCP Tools**: Context Broker operations, generic FIWARE API requests, Smart Data Models discovery and lookup
 - **1 MCP Resource**: Comprehensive API examples collection with real request/response patterns
 - **3 MCP Prompts**: Guided workflows for creating entities, querying data, and using Smart Data Models
-- **OAuth Authentication**: OpenStack Keystone integration with automatic token refresh
+- **Flexible Protocol Support**: HTTP or HTTPS connections
 - **NGSI-v2 API**: Full support for FIWARE NGSI-v2 specification
 
 
@@ -34,14 +35,15 @@ See the [Integration](#integration) section below for step-by-step instructions.
 
 ## What's Different
 
-This fork adapts the original NGSI-LD implementation to work with NGSI-v2 APIs and adds enterprise authentication support:
+This fork adapts the original NGSI-LD implementation to work with NGSI-v2 APIs and adds flexible authentication support:
 
 | Original | This Fork |
 |----------|-----------|
 | NGSI-LD (`/ngsi-ld/v1/`) | NGSI-v2 (`/v2/`) |
-| No authentication | OpenStack Keystone OAuth with auto-refresh |
+| No authentication | OAuth, Basic Auth, or none |
 | 5 specific tools | 4 tools + 1 resource + 3 prompts |
 | No Smart Data Models | Smart Data Models with auto type mapping |
+| HTTPS only | HTTP or HTTPS |
 
 ---
 
@@ -61,17 +63,44 @@ pip install -r requirements.txt
 cp .env.example .env
 ```
 
-Edit `.env` with your FIWARE Context Broker connection details:
+Edit `.env` with your FIWARE Context Broker connection details. The configuration varies depending on your authentication method:
 
+### Authentication Methods
+
+**Option 1: OAuth (OpenStack Keystone)** - For enterprise FIWARE deployments:
 ```env
+AUTH_TYPE=oauth
 AUTH_HOST=your-keystone-host
 AUTH_PORT=15001
 CB_HOST=your-context-broker-host
 CB_PORT=1026
+CB_PROTOCOL=https
 FIWARE_USERNAME=your_username
 FIWARE_PASSWORD=your_password
 SERVICE=your_service
 SUBSERVICE=/your_subservice
+```
+
+**Option 2: HTTP Basic Auth** - For Nginx-protected deployments:
+```env
+AUTH_TYPE=basic
+CB_HOST=your-server-ip
+CB_PORT=1026
+CB_PROTOCOL=http
+FIWARE_USERNAME=admin
+FIWARE_PASSWORD=your_password
+SERVICE=openiot
+SUBSERVICE=/Sandbox_1
+```
+
+**Option 3: No Authentication** - For local development:
+```env
+AUTH_TYPE=none
+CB_HOST=localhost
+CB_PORT=1026
+CB_PROTOCOL=http
+SERVICE=openiot
+SUBSERVICE=/
 ```
 
 > **Note for Windows users:** We use `FIWARE_USERNAME` instead of `USERNAME` because Windows has a system environment variable called `USERNAME` that would override your `.env` file.
@@ -171,6 +200,73 @@ The resource contains a comprehensive collection of FIWARE API examples that AI 
 | `use_smart_data_models` | Complete guide to Smart Data Models usage |
 
 Prompts provide guided workflows that leverage the available tools and resources.
+
+## 🔐 Authentication Configuration
+
+The MCP server supports three authentication methods. Choose the one that matches your FIWARE deployment:
+
+### OAuth (OpenStack Keystone)
+
+Best for: Enterprise FIWARE deployments with OpenStack Keystone
+
+**Features:**
+- Automatic token refresh on expiration
+- Secure token-based authentication
+- Multi-tenant support via SERVICE/SUBSERVICE
+
+**Configuration:**
+```env
+AUTH_TYPE=oauth
+AUTH_HOST=keystone.example.com
+AUTH_PORT=15001
+CB_HOST=orion.example.com
+CB_PORT=1026
+CB_PROTOCOL=https
+FIWARE_USERNAME=your_username
+FIWARE_PASSWORD=your_password
+SERVICE=your_service
+SUBSERVICE=/your_subservice
+```
+
+### HTTP Basic Authentication
+
+Best for: Nginx-protected FIWARE deployments, simple setups
+
+**Features:**
+- Simple username/password authentication
+- Works with Nginx reverse proxy
+- No token management needed
+
+**Configuration:**
+```env
+AUTH_TYPE=basic
+CB_HOST=172.233.116.40
+CB_PORT=1026
+CB_PROTOCOL=http
+FIWARE_USERNAME=admin
+FIWARE_PASSWORD=your_password
+SERVICE=openiot
+SUBSERVICE=/Sandbox_1
+```
+
+### No Authentication
+
+Best for: Local development, testing, internal networks
+
+**Features:**
+- No credentials required
+- Direct access to Context Broker
+- Fastest setup
+
+**Configuration:**
+```env
+AUTH_TYPE=none
+CB_HOST=localhost
+CB_PORT=1026
+CB_PROTOCOL=http
+SERVICE=openiot
+SUBSERVICE=/
+```
 
 ## 💡 Usage Examples
 
